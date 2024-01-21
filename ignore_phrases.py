@@ -374,11 +374,6 @@ ignore_phrases = {
     "Zambia": True,
     "Montenegro": True,
     "South Korea": True,
-    "": True,
-    "": True,
-    "": True,
-    "": True,
-    "": True,
     # Abbreviation
     "Ok": True,
     "OK": True,
