@@ -5,13 +5,17 @@ from string_checker import StringChecker
 class FileProcessor:
     @staticmethod
     def convert_line_endings_to_unix(file_path):
-        with io.open(file_path, 'r', encoding='utf-8') as file:
-            content = file.read()
+        try:
+            with io.open(file_path, 'r', encoding='utf-8') as file:
+                content = file.read()
 
-        content = content.replace('\r\n', '\n').replace('\r', '\n')
+            content = content.replace('\r\n', '\n').replace('\r', '\n')
 
-        with io.open(file_path, 'w', encoding='utf-8', newline='\n') as file:
-            file.write(content)
+            with io.open(file_path, 'w', encoding='utf-8', newline='\n') as file:
+                file.write(content)
+
+        except FileNotFoundError:
+            print(f"File not found: {file_path}. Skipping...")
 
     @staticmethod
     def process_po_files(directory, output_file):

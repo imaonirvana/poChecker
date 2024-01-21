@@ -12,28 +12,33 @@ class StringChecker:
             seen_entries = {}
 
             for entry in po:
-                original_string = entry.msgid
-                translated_string = entry.msgstr
+                try:
+                    original_string = entry.msgid
+                    translated_string = entry.msgstr
 
-                if not original_string:
-                    continue
+                    if not original_string:
+                        continue
 
-                key = (original_string, translated_string, entry.linenum)
+                    key = (original_string, translated_string, entry.linenum)
 
-                if original_string in ignore_phrases:
-                    continue
+                    if original_string in ignore_phrases:
+                        continue
 
-                if (original_string == translated_string and not original_string.isdigit()) or key in seen_entries:
-                    ErrorWriter.write_duplicate_error(output_file, file_path, entry.linenum, original_string)
-                else:
-                    seen_entries[key] = True
+                    if (original_string == translated_string and not original_string.isdigit()) or key in seen_entries:
+                        ErrorWriter.write_duplicate_error(output_file, file_path, entry.linenum, original_string)
+                    else:
+                        seen_entries[key] = True
 
-                if translated_string:
-                    StringChecker.check_string_rules(original_string, translated_string, file_path, entry.linenum,
-                                                     output_file)
+                    if translated_string:
+                        StringChecker.check_string_rules(original_string, translated_string, file_path, entry.linenum,
+                                                         output_file)
 
-        except Exception as e:
-            ErrorWriter.write_error(output_file, file_path, entry.linenum, "Error processing file", str(e))
+                except Exception as inner_exception:
+                    ErrorWriter.write_error(output_file, file_path, entry.linenum, "Error processing entry",
+                                            str(inner_exception))
+
+        except Exception as outer_exception:
+            ErrorWriter.write_error(output_file, file_path, 0, "Error processing file", str(outer_exception))
 
     @staticmethod
     def check_string_rules(original, translated, file_path, line_num, output_file):

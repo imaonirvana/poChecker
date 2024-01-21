@@ -11,7 +11,7 @@ if __name__ == "__main__":
         pass
 
     for po_file in po_files:
-        file_path = os.path.join(r"C:\Users\dfun8\Desktop\delta_files\4.10", po_file)
+        file_path = os.path.join(r"C:\Users\dfun8\Desktop\delta_files\el_GR.UTF-8", po_file)
 
         print(f"Processing file: {file_path}")
 
