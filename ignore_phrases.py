@@ -544,7 +544,6 @@ ignore_phrases = {
     "PushApp_Ring_CallsDig_CallsVoc_Rx_Sms": True,
     "[215] GSM Codec Audio": True,
     "[376] SMS NUM $(n)": True,
-    "": True,
     "[112] PTM": True,
     "[112] White List": True,
     "[230] Auto SMS": True,
