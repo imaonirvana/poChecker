@@ -203,6 +203,32 @@ Original: 'All-Notification'
 ===========================================================================
 ```
 
+## Customizing Ignore Phrases
+
+You can utilize the *```ignore_phrases.py```* file. This file allows you to define phrases that, when present in the ```.po``` files, will not trigger duplicate error warnings. These phrases typically represent strings that should not be translated.
+
+#### Structure of *```ignore_phrases.py```*
+
+The *```ignore_phrases.py```* file is organized into sections, such as:
+
++ PowerManage
++ Panels & Panel Families
++ Devices & etc.
++ Roles
++ Communication & Protocols 
++ Locales 
++ Countries 
++ Abbreviation 
++ Metric 
++ Variables
++ Errors, troubles & notice
++ Masks 
++ Numeric options 
++ Options 
++ Other 
+
+Each section contains a list of phrases that are exempt from the duplicate checking process.
+
 ## Bug Reports and Feature Requests
 
 If you encounter any bugs or have suggestions for new features, please feel free to contact me in Telegram or Teams. I appreciate your feedback and contributions to improve **```poChecker```**.
