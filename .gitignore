@@ -6,4 +6,6 @@ venv/
 .DS_Store
 __pycache__
 __pycache__/*
-error_output.txt
+test_dir/
+all_errors.txt
+duplicates.txt
