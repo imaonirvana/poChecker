@@ -151,8 +151,7 @@ ignore_phrases = {
     "ro_RO": True,
     "pt_PT": True,
     "fr_FR": True,
-    ''' Commented until the final logic in 4.16 is resolved
-    "Bulgarian": True ,
+    "Bulgarian": True,
     "Chinese": True,
     "Croatian": True,
     "Danish": True,
@@ -374,7 +373,6 @@ ignore_phrases = {
     "Zambia": True,
     "Montenegro": True,
     "South Korea": True,
-    '''
     # Abbreviation
     "Ok": True,
     "OK": True,
