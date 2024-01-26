@@ -21,6 +21,17 @@ cd poChecker
 pip3 install -r requirements.txt
 ```
 
+___
+
+*Note: If you already have **```poChecker```** on your device, download the latest version before using it:*
+
+```shell
+cd poChecker
+```
+```shell
+git pull
+```
+
 ## Usage
 
 ### How to run
@@ -49,11 +60,13 @@ ___
 
 ### Results
 
-The results will be saved in an output file named *```error_output.txt```*.
+The results will be saved in an output files named *```all_errors.txt``` & ```duplicates.txt```*.
 
 *Note:* If the file already exists, it will be overwritten.
 
-You can view the results by opening the *```error_output.txt```* file, which will contain any errors found during the checking process.
+You can view the results by opening the *```all_errors.txt```* file, which will contain any errors found during the checking process.
+
+You can view the results by opening the *```all_errors.txt```* file, which will contain any errors found during the checking process. The file *```duplicates.txt```* will specifically contain information about duplicates.
 
 #### For example:
 ```python
@@ -224,7 +237,8 @@ The *```ignore_phrases.py```* file is organized into sections, such as:
 + Errors, troubles & notice
 + Masks 
 + Numeric options 
-+ Options 
++ Options
++ Tunes 
 + Other 
 
 Each section contains a list of phrases that are exempt from the duplicate checking process.
