@@ -6,7 +6,7 @@ from ignore_phrases import ignore_phrases
 
 class StringChecker:
     @staticmethod
-    def check_po_file(file_path, output_file):
+    def check_po_file(file_path, output_file, duplicate_file):
         try:
             po = polib.pofile(file_path)
             seen_entries = {}
@@ -25,7 +25,8 @@ class StringChecker:
                         continue
 
                     if (original_string == translated_string and not original_string.isdigit()) or key in seen_entries:
-                        ErrorWriter.write_duplicate_error(output_file, file_path, entry.linenum, original_string)
+                        ErrorWriter.write_duplicate_error(output_file, file_path, entry.linenum, original_string,
+                                                          duplicate_file)
                     else:
                         seen_entries[key] = True
 

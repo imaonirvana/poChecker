@@ -14,9 +14,13 @@ def main():
         return
 
     po_files = ["frontend.po", "xml.po", "apps.po", "api.po", "interactive.po", "rest-api.po", "mmisvc.po"]
-    output_file = "error_output.txt"
+    output_file = "all_errors.txt"
+    duplicate_file = "duplicates.txt"
 
     with open(output_file, 'w', encoding='utf-8'):
+        pass
+
+    with open(duplicate_file, 'w', encoding='utf-8'):
         pass
 
     for po_file in po_files:
@@ -25,7 +29,7 @@ def main():
         print(f"Processing file: {file_path}")
 
         FileProcessor.convert_line_endings_to_unix(file_path)
-        StringChecker.check_po_file(file_path, output_file)
+        StringChecker.check_po_file(file_path, output_file, duplicate_file)
 
     print("Done checking files!")
 
