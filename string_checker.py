@@ -53,8 +53,7 @@ class StringChecker:
         single_quotes_translated = translated.count("'")
 
         if single_quotes_translated % 2 == 1:
-            ErrorWriter.write_error(file_path, line_num, "Odd number of single quotes", original,
-                                    translated)
+            ErrorWriter.write_error(file_path, line_num, "Odd number of single quotes", original, translated)
 
         # Rule 3: Check % translation
         original_pattern = re.compile(r'(?<!%)%(\S*?)%')
@@ -78,8 +77,8 @@ class StringChecker:
 
         if original_matches != translated_matches:
             ErrorWriter.write_error(file_path, line_num, "Round bracket and $ translation mismatch", original,
-                        translated)
-            FixTranslations.fix_translations_in_file(file_path, original, translated, line_num)
+                                    translated)
+            FixTranslations.fixed_translation(original, translated)
 
         # Rule 6: Check double quotes, excluding those within square brackets
         if '"' in translated and not re.search(r'\[[^\]]*"[^\]]*"\]', original, re.IGNORECASE):
