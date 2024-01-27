@@ -18,7 +18,7 @@ class FileProcessor:
             print(f"File not found: {file_path}. Skipping...")
 
     @staticmethod
-    def process_po_files(directory, output_file, duplicate_file):
+    def process_po_files(directory):
         for root, dirs, files in os.walk(directory):
             for file_name in files:
                 if file_name.endswith('.po'):
@@ -31,4 +31,4 @@ class FileProcessor:
                     if '\r\n' in content or '\r' in content:
                         FileProcessor.convert_line_endings_to_unix(file_path)
 
-                    StringChecker.check_po_file(file_path, output_file, duplicate_file)
+                    StringChecker.check_po_file(file_path)
