@@ -1,4 +1,3 @@
-# REFACTOR **DO NOT SCRIPT NOW**
 # poChecker
 
 ![PyPI - Version](https://img.shields.io/pypi/v/polib)
