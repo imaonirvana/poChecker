@@ -30,3 +30,10 @@ class ErrorWriter:
             if translated is not None:
                 output.write(f"Translated: '{translated}'\n")
             output.write("===========================================================================\n\n")
+
+    @staticmethod
+    def reset_error_files():
+        with open(ErrorWriter._general_output, 'w', encoding='utf-8'):
+            pass
+        with open(ErrorWriter._duplicate_output, 'w', encoding='utf-8'):
+            pass
