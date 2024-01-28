@@ -2,7 +2,7 @@ import re
 import polib
 from error_writer import ErrorWriter
 from ignore_phrases import ignore_phrases
-from fix_translations import FixTranslations
+from fix_translations.fix_translations import FixTranslations
 
 
 class StringChecker:
@@ -78,7 +78,7 @@ class StringChecker:
         if original_matches != translated_matches:
             ErrorWriter.write_error(file_path, line_num, "Round bracket and $ translation mismatch", original,
                                     translated)
-            FixTranslations.fixed_translation(original, translated)
+            FixTranslations.fix_translation(original, translated)
 
         # Rule 6: Check double quotes, excluding those within square brackets
         if '"' in translated and not re.search(r'\[[^\]]*"[^\]]*"\]', original, re.IGNORECASE):
