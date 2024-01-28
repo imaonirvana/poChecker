@@ -9,7 +9,7 @@ class FixTranslations:
         original_parts = FixTranslations._get_parts(original)
         translated_parts = FixTranslations._get_parts(translated)
 
-        if not FixTranslations._is_broken(original_parts, translated_parts):
+        if not FixTranslations._is_parts_broken(original_parts, translated_parts):
             return translated
 
         result = list()
@@ -35,15 +35,18 @@ class FixTranslations:
         original_parts = FixTranslations._get_parts(original)
         translated_parts = FixTranslations._get_parts(translated)
 
-        return FixTranslations._is_broken(original_parts, translated_parts)
+        return FixTranslations._is_parts_broken(original_parts, translated_parts)
 
     @staticmethod
-    def _is_broken(original_parts, translated_parts) -> bool:
-        for part_index in range(0, len(translated_parts)):
-            original_part = original_parts[part_index].groups()
-            translated_part = translated_parts[part_index].groups()
+    def _is_parts_broken(original_parts, translated_parts) -> bool:
+        for original_part, translated_part in zip(original_parts, translated_parts):
+            original_part_str = original_part.groups()[0]
+            translated_part_str = translated_part.groups()[0]
 
-            if not (original_part == translated_part):
+            if FixTranslations._contains_arithmetics(translated_part_str):
+                return False
+
+            if original_part_str != translated_part_str:
                 return True
 
         return False
@@ -51,3 +54,8 @@ class FixTranslations:
     @staticmethod
     def _get_parts(text: str):
         return list(re.finditer(REG_EX, text))
+
+    @staticmethod
+    def _contains_arithmetics(input: str) -> bool:
+        forbidden_chars = ['+', '-', '*', '/', 'j', 'i', 'n', 'k']
+        return not any(char in input for char in forbidden_chars)

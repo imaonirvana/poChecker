@@ -29,6 +29,15 @@ def test_should_retain_multiple_brackets():
     pass
 
 
+def test_should_compare_in_one():
+    original = 'Test some $(should_retain) original $(should_retain)'
+    translated = 'Some $(should_retain)'
+
+    assert FixTranslations.fix_translation(original, translated) == translated
+
+    pass
+
+
 def test_should_say_it_valid():
 
     assert not FixTranslations.is_broken('Test some original', 'Some translated')
@@ -40,4 +49,3 @@ def test_should_say_it_invalid():
     translated = 'Some $(changed) translated'
 
     assert FixTranslations.is_broken(original, translated)
-
