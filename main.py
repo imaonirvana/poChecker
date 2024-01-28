@@ -1,6 +1,7 @@
 import argparse
 from file_processor import FileProcessor
 from string_checker import StringChecker
+from error_writer import ErrorWriter
 import os
 
 def main():
@@ -14,6 +15,8 @@ def main():
         return
 
     po_files = ["frontend.po", "xml.po", "apps.po", "api.po", "interactive.po", "rest-api.po", "mmisvc.po"]
+
+    ErrorWriter.reset_error_files()
 
     for po_file in po_files:
         file_path = os.path.join(args.directory_path, po_file)
