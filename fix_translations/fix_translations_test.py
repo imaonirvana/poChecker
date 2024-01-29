@@ -49,3 +49,9 @@ def test_should_say_it_invalid():
     translated = 'Some $(changed) translated'
 
     assert FixTranslations.is_broken(original, translated)
+
+def test_should_not_contain_forbiden_chars():
+    original = 'Test some $(should_retain) original'
+    translated = 'Some $(j) translated $(k + 1)'
+
+    assert FixTranslations.fix_translation(original, translated) == translated

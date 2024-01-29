@@ -44,7 +44,7 @@ class FixTranslations:
             translated_part_str = translated_part.groups()[0]
 
             if FixTranslations._contains_arithmetics(translated_part_str):
-                return False
+                continue
 
             if original_part_str != translated_part_str:
                 return True
@@ -57,5 +57,10 @@ class FixTranslations:
 
     @staticmethod
     def _contains_arithmetics(input: str) -> bool:
-        forbidden_chars = ['+', '-', '*', '/', 'j', 'i', 'n', 'k']
-        return not any(char in input for char in forbidden_chars)
+        forbidden_chars = ['+', '-', '*', '/']
+        exact_forbidden_chars = ['j', 'i', 'n', 'k']
+
+        if input in exact_forbidden_chars:
+            return True
+
+        return any(char in input for char in forbidden_chars)
