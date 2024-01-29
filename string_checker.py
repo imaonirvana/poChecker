@@ -76,7 +76,6 @@ class StringChecker:
             ErrorWriter.write_error(file_path, line_num, "Round bracket and $ translation mismatch", original,
                                     translated)
             fixed_translation = FixTranslations.fix_translation(original, translated)
-            print(fixed_translation)
             output_writer.write_to_line(fixed_translation, line_num)
 
         # Rule 6: Check double quotes, excluding those within square brackets
