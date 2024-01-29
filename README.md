@@ -4,7 +4,7 @@
 
 **```poChecker```** - is a script that automatically checks ```.po``` files against standard rules.
 
-### Installation
+## Installation
 
 Install the current version with:
 
