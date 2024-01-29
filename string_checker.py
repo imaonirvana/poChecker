@@ -3,6 +3,7 @@ import polib
 from error_writer import ErrorWriter
 from ignore_phrases import ignore_phrases
 from fix_translations.fix_translations import FixTranslations
+from output_writer.output_writer import OutputWriter
 
 
 class StringChecker:
@@ -42,6 +43,7 @@ class StringChecker:
 
     @staticmethod
     def check_string_rules(original, translated, file_path, line_num):
+        output_writer = OutputWriter(file_path)
 
         # Rule 1: Check capital letters in the first character, excluding numbers and symbols
         if (original and original[0].isalpha() and translated and translated[0].isalpha() and
@@ -70,15 +72,17 @@ class StringChecker:
             ErrorWriter.write_error(file_path, line_num, "Tilde translation found", original, translated)
 
         # Rule 5: Do not translate words inside the "round brackets" and with $ before them
-        pattern = r'\$\([^\)]+\)'
+        # pattern = r'\$\([^\)]+\)'
+        #
+        # original_matches = re.findall(pattern, original)
+        # translated_matches = re.findall(pattern, translated)
 
-        original_matches = re.findall(pattern, original)
-        translated_matches = re.findall(pattern, translated)
-
-        if original_matches != translated_matches:
+        if FixTranslations.is_broken(original, translated):
             ErrorWriter.write_error(file_path, line_num, "Round bracket and $ translation mismatch", original,
                                     translated)
-            FixTranslations.fix_translation(original, translated)
+            fixed_translation = FixTranslations.fix_translation(original, translated)
+            output_writer.write_to_line(fixed_translation, line_num)
+
 
         # Rule 6: Check double quotes, excluding those within square brackets
         if '"' in translated and not re.search(r'\[[^\]]*"[^\]]*"\]', original, re.IGNORECASE):
