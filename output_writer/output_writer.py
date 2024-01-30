@@ -1,11 +1,11 @@
 class OutputWriter:
     _file_path: str
 
-    def __init__(self, file_path):
-        self._file_path = file_path
+    def __init__(self, file_path: str):
+        self._file_path = file_path.replace('\\', '/')
 
     def write_to_line(self, content: str, line_num: int):
-        with open(self._file_path, 'r') as file:
+        with open(self._file_path, 'r', encoding="utf-8") as file:
             lines = file.readlines()
 
         if line_num < 1 or line_num > len(lines):
@@ -13,6 +13,7 @@ class OutputWriter:
 
         lines[line_num + 1] = 'msgstr "' + content + '"' + '\n'
 
-        with open(self._file_path, 'w') as file:
+        with open(self._file_path, 'w', encoding="utf-8") as file:
             file.writelines(lines)
-        pass
+
+    pass
