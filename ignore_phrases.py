@@ -203,6 +203,7 @@ ignore_phrases = {
     "Burkina Faso": True,
     "Burundi": True,
     "Chile": True,
+    "Cameroon": True,
     "Egypt": True,
     "Eritrea": True,
     "Gabon": True,
