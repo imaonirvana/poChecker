@@ -1,15 +1,16 @@
+from rules.base_rule import BaseRule
 import re
+
 
 REG_EX = r'\$\(([^\)]+)\)'
 
 
-class FixTranslations:
-    @staticmethod
-    def fix_translation(original: str, translated: str) -> str:
-        original_parts = FixTranslations._get_parts(original)
-        translated_parts = FixTranslations._get_parts(translated)
+class RoundBracketsRule(BaseRule):
+    def fix_translation(self, original: str, translated: str) -> str:
+        original_parts = self._get_parts(original)
+        translated_parts = self._get_parts(translated)
 
-        if not FixTranslations._is_parts_broken(original_parts, translated_parts):
+        if not self._is_parts_broken(original_parts, translated_parts):
             return translated
 
         result = list()
@@ -30,20 +31,24 @@ class FixTranslations:
 
         return ''.join(result)
 
-    @staticmethod
-    def is_broken(original: str, translated: str) -> bool:
-        original_parts = FixTranslations._get_parts(original)
-        translated_parts = FixTranslations._get_parts(translated)
+    def is_broken(self, original: str, translated: str) -> bool:
+        original_parts = self._get_parts(original)
+        translated_parts = self._get_parts(translated)
 
-        return FixTranslations._is_parts_broken(original_parts, translated_parts)
+        return self._is_parts_broken(original_parts, translated_parts)
 
-    @staticmethod
-    def _is_parts_broken(original_parts, translated_parts) -> bool:
+    def get_error_message(self, original: str, translated: str) -> str:
+        return "adsadsa"
+
+    def _get_parts(self, text: str):
+        return list(re.finditer(REG_EX, text))
+
+    def _is_parts_broken(self, original_parts, translated_parts) -> bool:
         for original_part, translated_part in zip(original_parts, translated_parts):
             original_part_str = original_part.groups()[0]
             translated_part_str = translated_part.groups()[0]
 
-            if FixTranslations._contains_arithmetics(translated_part_str):
+            if self._contains_arithmetics(translated_part_str):
                 continue
 
             if original_part_str != translated_part_str:
@@ -51,12 +56,7 @@ class FixTranslations:
 
         return False
 
-    @staticmethod
-    def _get_parts(text: str):
-        return list(re.finditer(REG_EX, text))
-
-    @staticmethod
-    def _contains_arithmetics(input: str) -> bool:
+    def _contains_arithmetics(self, input: str) -> bool:
         forbidden_chars = ['+', '-', '*', '/']
         exact_forbidden_chars = ['j', 'i', 'n', 'k']
 
