@@ -21,7 +21,7 @@ class ErrorWriter:
             duplicate.write("===========================================================================\n\n")
 
     @classmethod
-    def write_error(cls, file_path, line_num, description, original, translated=None):
+    def write_error(cls, error:):
         with open(cls._general_output, 'a', encoding='utf-8') as output:
             output.write("===========================================================================\n")
             output.write(f"Error in {os.path.basename(file_path)}, line {line_num}:\n")

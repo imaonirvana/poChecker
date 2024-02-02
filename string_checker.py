@@ -2,8 +2,8 @@ import re
 import polib
 from error_writer import ErrorWriter
 from ignore_phrases import ignore_phrases
-from fix_translations.fix_translations import FixTranslations
 from output_writer.output_writer import OutputWriter
+from pipe_line import Pipeline
 
 
 class StringChecker:
@@ -44,42 +44,10 @@ class StringChecker:
     @staticmethod
     def check_string_rules(original, translated, file_path, line_num):
         output_writer = OutputWriter(file_path)
+        pipe_line = Pipeline(file_path, line_num)
 
-        # Rule 1: Check capital letters in the first character, excluding numbers and symbols
-        if (original and original[0].isalpha() and translated and translated[0].isalpha() and
-                ((original[0].isupper() and translated[0].islower()) or
-                 (original[0].islower() and translated[0].isupper()))):
-            ErrorWriter.write_error(file_path, line_num, "Capitalization mismatch", original, translated)
+        if not pipe_line.is_broken(original, translated):
+            return
 
-        # Rule 2: Check single quotes in the translated string
-        single_quotes_translated = translated.count("'")
-
-        if single_quotes_translated % 2 == 1:
-            ErrorWriter.write_error(file_path, line_num, "Odd number of single quotes", original, translated)
-
-        # Rule 3: Check % translation
-        original_pattern = re.compile(r'(?<!%)%(\S*?)%')
-        translated_pattern = re.compile(r'(?<!%)%(\S*?)%')
-
-        original_matches = set(original_pattern.findall(original))
-        translated_matches = set(translated_pattern.findall(translated))
-
-        if original_matches != translated_matches:
-            ErrorWriter.write_error(file_path, line_num, "% translation mismatch", original, translated)
-
-        # Rule 4: Check tilde translation
-        if '~' in original and '~' in translated:
-            ErrorWriter.write_error(file_path, line_num, "Tilde translation found", original, translated)
-
-        # Rule 5: Do not translate words inside the "round brackets" and with $ before them
-        if FixTranslations.is_broken(original, translated):
-            ErrorWriter.write_error(file_path, line_num, "Round bracket and $ translation mismatch", original,
-                                    translated)
-            fixed_translation = FixTranslations.fix_translation(original, translated)
-            output_writer.write_to_line(fixed_translation, line_num)
-
-        # Rule 6: Check double quotes, excluding those within square brackets
-        if '"' in translated and not re.search(r'\[[^\]]*"[^\]]*"\]', original, re.IGNORECASE):
-            ErrorWriter.write_error(file_path, line_num,
-                                    "Double quotes should be replaced with single quotes",
-                                    original, translated)
+        fixed_translation = pipe_line.process_translation(original, translated)
+        output_writer.write_to_line(fixed_translation, line_num)
