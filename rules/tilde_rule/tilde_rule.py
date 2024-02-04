@@ -38,7 +38,7 @@ class TildeRule(BaseRule):
         return self._is_parts_broken(original_parts, translated_parts)
 
     def get_error_message(self, pipeline_input) -> str:
-        return self.generate_base_error_message("tilde rule mismatch", pipeline_input)
+        return self.generate_base_error_message("Tilde rule mismatch", pipeline_input)
 
     def _get_parts(self, text: str):
         return list(re.finditer(REG_EX, text))
