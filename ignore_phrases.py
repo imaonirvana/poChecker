@@ -399,6 +399,7 @@ ignore_phrases = {
     "PIR": True,
     "x10": True,
     "PGM": True,
+    "Pgm": True,
     "RSSI": True,
     "RI": True,
     "P": True,
@@ -428,7 +429,6 @@ ignore_phrases = {
     "BOSS": True,
     "RRI": True,
     "FTC": True,
-    "CO": True,
     "TLM": True,
     # Metric
     "V": True,
@@ -441,6 +441,8 @@ ignore_phrases = {
     "ar": True,
     "th": True,
     "LI": True,
+    "CO": True,
+    "Co": True,
     "Fahrenheit": True,
     # Variables
     "(%s)": True,
@@ -531,6 +533,7 @@ ignore_phrases = {
     "10Mbit/s, Half Duplex": True,
     # Options
     "I__voice_box_mode": True,
+    "24h CO": True,
     "P01: PGM PIN #1": True,
     "P02: PGM PIN #2": True,
     "P03: PGM PIN #3": True,
