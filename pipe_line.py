@@ -1,5 +1,5 @@
+from PipelineInput import PipelineInput
 from error_writer import ErrorWriter
-from pipeline_error_writter import PipelineErrorWriter
 from rules.double_quotes_rule.double_quotes_rule import DoubleQuotesRule
 from rules.round_brackets_rule.round_brackets_rule import RoundBracketsRule
 from rules.capitalization_rule.capitalization_rule import CapitalizationRule
@@ -16,25 +16,18 @@ class Pipeline:
         SingleQuotesRule(),
         TildeRule(),
     ]
-    error_writer: PipelineErrorWriter
 
-    def __init__(self, file_path, line_num):
-        self.error_writer = error_writer
-        self.file_path = file_path
-        self.line_num = line_num
-
-    def process_translation(self, original: str, translated: str) -> str:
-        result = translated
+    def process_translation(self, pipeline_input: PipelineInput) -> str:
+        result = pipeline_input.get_translated()
 
         for step in self.main_steps:
-            if not step.is_broken(original, result):
+            if not step.is_broken(pipeline_input.get_original(), result):
                 continue
 
-            result = step.fix_translation(original, translated)
-            error_message = step.get_error_message(original, translated, self.file_path, self.line_num)
+            result = step.fix_translation(pipeline_input.get_original(), result)
+            error_message = step.get_error_message(pipeline_input)
 
-            ErrorWriter.write_error(self.file_path, self.line_num, error_message)
-
+            ErrorWriter.write_error(error_message)
 
         return result
 

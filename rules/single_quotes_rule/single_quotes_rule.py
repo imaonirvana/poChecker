@@ -12,5 +12,5 @@ class SingleQuotesRule(BaseRule):
     def is_broken(self, original: str, translated: str) -> bool:
         return bool(re.search(REG_EX, translated))
 
-    def get_error_message(self, original: str, translated: str, file_path, line_num) -> str:
-        pass
+    def get_error_message(self, pipeline_input) -> str:
+        return self.generate_base_error_message("single quote mismatch", pipeline_input)

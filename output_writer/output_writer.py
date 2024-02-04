@@ -8,12 +8,14 @@ class OutputWriter:
         with open(self._file_path, 'r', encoding="utf-8") as file:
             lines = file.readlines()
 
-        if line_num < 1 or line_num > len(lines):
+        if line_num < 0 or line_num >= len(lines):
             raise ValueError("Invalid line number")
 
-        lines[line_num + 1] = 'msgstr "' + content + '"' + '\n'
+        if 'msgstr' in lines[line_num - 1]:
+            lines[line_num - 1] = f'msgstr "{content}"\n'
+
+        else:
+            lines[line_num - 1] = f'"{content}"\n'
 
         with open(self._file_path, 'w', encoding="utf-8") as file:
             file.writelines(lines)
-
-    pass

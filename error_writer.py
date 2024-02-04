@@ -21,15 +21,9 @@ class ErrorWriter:
             duplicate.write("===========================================================================\n\n")
 
     @classmethod
-    def write_error(cls, error:):
+    def write_error(cls, error: str):
         with open(cls._general_output, 'a', encoding='utf-8') as output:
-            output.write("===========================================================================\n")
-            output.write(f"Error in {os.path.basename(file_path)}, line {line_num}:\n")
-            output.write(f"Description: {description}\n")
-            output.write(f"Original: '{original}'\n")
-            if translated is not None:
-                output.write(f"Translated: '{translated}'\n")
-            output.write("===========================================================================\n\n")
+            output.write(error)
 
     @staticmethod
     def reset_error_files():

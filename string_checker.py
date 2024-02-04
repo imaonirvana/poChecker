@@ -1,5 +1,6 @@
-import re
 import polib
+
+from PipelineInput import PipelineInput
 from error_writer import ErrorWriter
 from ignore_phrases import ignore_phrases
 from output_writer.output_writer import OutputWriter
@@ -12,6 +13,9 @@ class StringChecker:
         try:
             po = polib.pofile(file_path)
             seen_entries = {}
+
+            with open(file_path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
 
             for entry in po:
                 try:
@@ -32,22 +36,32 @@ class StringChecker:
                         seen_entries[key] = True
 
                     if translated_string:
-                        StringChecker.check_string_rules(original_string, translated_string, file_path, entry.linenum)
+                        for i, line in enumerate(lines):
+                            if translated_string in line:
+                                line_number = i + 1
+                                break
+                        else:
+                            line_number = entry.linenum
+####TESTTESTTEST
+                        if 'msgstr ""' or '""' in translated_string:
+                            ErrorWriter.write_error()
+
+                            StringChecker.check_string_rules(original_string, translated_string, file_path, line_number)
 
                 except Exception as inner_exception:
-                    ErrorWriter.write_error(file_path, entry.linenum, "Error processing entry",
-                                            str(inner_exception))
+                    print(inner_exception)
 
         except Exception as outer_exception:
-            ErrorWriter.write_error(file_path, 0, "Error processing file", str(outer_exception))
+            print(outer_exception)
 
     @staticmethod
     def check_string_rules(original, translated, file_path, line_num):
         output_writer = OutputWriter(file_path)
-        pipe_line = Pipeline(file_path, line_num)
+        pipe_line = Pipeline()
+        pipeline_input = PipelineInput(original, translated, file_path, line_num)
 
         if not pipe_line.is_broken(original, translated):
             return
 
-        fixed_translation = pipe_line.process_translation(original, translated)
+        fixed_translation = pipe_line.process_translation(pipeline_input)
         output_writer.write_to_line(fixed_translation, line_num)

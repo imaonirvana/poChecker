@@ -12,5 +12,5 @@ class CapitalizationRule(BaseRule):
                  (original[0].islower() and translated[0].isupper()))):
             return True
 
-    def get_error_message(self, original: str, translated: str) -> str:
-        return "Capitalization mismatch"
+    def get_error_message(self, pipeline_input) -> str:
+        return self.generate_base_error_message("Capitalization mismatch", pipeline_input)
