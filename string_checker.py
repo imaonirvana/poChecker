@@ -42,11 +42,8 @@ class StringChecker:
                                 break
                         else:
                             line_number = entry.linenum
-####TESTTESTTEST
-                        if 'msgstr ""' or '""' in translated_string:
-                            ErrorWriter.write_error()
 
-                            StringChecker.check_string_rules(original_string, translated_string, file_path, line_number)
+                        StringChecker.check_string_rules(original_string, translated_string, file_path, line_number)
 
                 except Exception as inner_exception:
                     print(inner_exception)
