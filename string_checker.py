@@ -14,9 +14,6 @@ class StringChecker:
             po = polib.pofile(file_path)
             seen_entries = {}
 
-            with open(file_path, 'r', encoding='utf-8') as f:
-                lines = f.readlines()
-
             for entry in po:
                 try:
                     original_string = entry.msgid
@@ -36,14 +33,8 @@ class StringChecker:
                         seen_entries[key] = True
 
                     if translated_string:
-                        for i, line in enumerate(lines):
-                            if translated_string in line:
-                                line_number = i + 1
-                                break
-                        else:
-                            line_number = entry.linenum
-
-                        StringChecker.check_string_rules(original_string, translated_string, file_path, line_number)
+                        pipeline_input = PipelineInput(original_string, translated_string, file_path, entry.linenum)
+                        StringChecker.check_string_rules(pipeline_input)
 
                 except Exception as inner_exception:
                     print(inner_exception)
@@ -52,13 +43,12 @@ class StringChecker:
             print(outer_exception)
 
     @staticmethod
-    def check_string_rules(original, translated, file_path, line_num):
-        output_writer = OutputWriter(file_path)
+    def check_string_rules(pipeline_input: PipelineInput):
+        output_writer = OutputWriter(pipeline_input.get_file_path())
         pipe_line = Pipeline()
-        pipeline_input = PipelineInput(original, translated, file_path, line_num)
 
-        if not pipe_line.is_broken(original, translated):
+        if not pipe_line.is_broken(pipeline_input.get_original(), pipeline_input.get_translated()):
             return
 
         fixed_translation = pipe_line.process_translation(pipeline_input)
-        output_writer.write_to_line(fixed_translation, line_num)
+        output_writer.write_to_line(fixed_translation, pipeline_input.get_line_num())

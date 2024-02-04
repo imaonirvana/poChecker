@@ -2,7 +2,7 @@ from rules.base_rule import BaseRule
 import re
 
 
-REG_EX = r'%\S+'
+REG_EX = r'%(\S+)'
 
 
 class PercentRule(BaseRule):
