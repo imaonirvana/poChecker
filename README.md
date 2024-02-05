@@ -1,3 +1,5 @@
+# FIXING HUGE BUG, DO NOT USE IT NOW
+
 # poChecker
 
 ![PyPI - Version](https://img.shields.io/pypi/v/polib)
