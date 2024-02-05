@@ -13,11 +13,11 @@ from rules.tilde_rule.tilde_rule import TildeRule
 class Pipeline:
     main_steps: list[BaseRule] = [
         RoundBracketsRule(),
-        CapitalizationRule(),
+        PercentRule(),
+        TildeRule(),
         DoubleQuotesRule(),
         SingleQuotesRule(),
-        TildeRule(),
-        PercentRule(),
+        CapitalizationRule(),
         OddQuotesRule(),
     ]
 
