@@ -38,6 +38,52 @@ def test_should_retain_multiple_percents():
     pass
 
 
+def test_should_not_change_end_of_string():
+    original = 'Test some %should_retain?'
+    translated = 'Some %changed translated'
+
+    assert PercentRule().fix_translation(original, translated) == 'Some %should_retain translated'
+
+    pass
+
+
+def test_should_change_multy_variables_correctly():
+    original = 'Zone (%d) %s(%s) is out of bound (%d..%d)'
+    translated = 'Зоната %changed_1 %changed_2 %changed_4 е извън обхвата %changed_3'
+
+    assert PercentRule().fix_translation(original, translated) == 'Зоната (%d) %s(%s) (%d..%d) е извън обхвата %changed_3'
+
+    pass
+
+
+def test_should_change_multiple_percents():
+    original = 'Zone 75%% full'
+    translated = 'Зона 75%% повна'
+
+    assert PercentRule().fix_translation(original, translated) == translated
+
+    pass
+
+
+def test_should_change_variables_in_any_brackets():
+    original = 'Zone %{value} [%s] is out of bound (%s) #%s" %(minimum)d'
+    translated = 'Зоната %changed_1 е извън обхвата %changed_2 %changed_3 %changed_4 %changed_5'
+
+    assert PercentRule().fix_translation(original, translated) == 'Зоната %{value} е извън обхвата [%s] (%s) %s %(minimum)d'
+
+    pass
+
+
+def test_should_change_variables_with_special_characters_correctly():
+    original = 'Stopped runner %runner_ids->type|uniq% for panels %runner_ids->serial%'
+    translated = 'Спрян изпълнител %changed% за панели %changed2%'
+
+    assert PercentRule().fix_translation(original,
+                                         translated) == 'Спрян изпълнител %runner_ids->type|uniq% за панели %runner_ids->serial%'
+
+    pass
+
+
 def test_should_compare_in_one():
     original = 'Test some %should_retain% original %should_retain%'
     translated = 'Some %should_retain%'
