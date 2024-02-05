@@ -2,7 +2,8 @@ from rules.base_rule import BaseRule
 import re
 
 
-REG_EX = r'%(\S+)'
+REG_EX = r'\'*\(*\{*\[*%([\w\.\-\>\|{})\[\](%\']+)'
+baned_parts = ["%%"]
 
 
 class PercentRule(BaseRule):
@@ -16,7 +17,7 @@ class PercentRule(BaseRule):
         result = list()
         start = 0
 
-        for part_index in range(0, len(translated_parts)):
+        for part_index in range(0, min(len(translated_parts), len(original_parts))):
             original_part = original_parts[part_index]
             translated_part = translated_parts[part_index]
 
@@ -41,7 +42,15 @@ class PercentRule(BaseRule):
         return self.generate_base_error_message("Percent rule mismatch", pipeline_input)
 
     def _get_parts(self, text: str):
-        return list(re.finditer(REG_EX, text))
+        result = []
+
+        for part in list(re.finditer(REG_EX, text)):
+            if part.groups()[0] in baned_parts:
+                continue
+
+            result.append(part)
+
+        return result
 
     def _is_parts_broken(self, original_parts, translated_parts) -> bool:
         for original_part, translated_part in zip(original_parts, translated_parts):
