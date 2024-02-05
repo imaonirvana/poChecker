@@ -1,6 +1,8 @@
 from PipelineInput import PipelineInput
 from error_writer import ErrorWriter
 from rules.double_quotes_rule.double_quotes_rule import DoubleQuotesRule
+from rules.odd_quotes_rule.odd_quotes_rule import OddQuotesRule
+from rules.percent_rule.percent_rule import PercentRule
 from rules.round_brackets_rule.round_brackets_rule import RoundBracketsRule
 from rules.capitalization_rule.capitalization_rule import CapitalizationRule
 from rules.base_rule import BaseRule
@@ -15,6 +17,8 @@ class Pipeline:
         DoubleQuotesRule(),
         SingleQuotesRule(),
         TildeRule(),
+        PercentRule(),
+        OddQuotesRule(),
     ]
 
     def process_translation(self, pipeline_input: PipelineInput) -> str:
