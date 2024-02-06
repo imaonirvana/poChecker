@@ -20,7 +20,7 @@ class BaseRule(ABC):
     def generate_base_error_message(self, description: str, pipeline_input: PipelineInput):
         result = ""
         result += "===========================================================================\n"
-        result += f"Error in {os.path.basename(pipeline_input.get_file_path())}, line {str(pipeline_input.get_line_num())}:\n"
+        result += f"Error in {os.path.basename(pipeline_input.get_file_path())}, around line {str(pipeline_input.get_line_num())}:\n"
         result += f"Description: {description}\n"
         result += f"Original: '{pipeline_input.get_original()}'\n"
         if pipeline_input.get_translated() is not None:
