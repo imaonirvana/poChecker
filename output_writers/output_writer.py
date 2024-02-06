@@ -1,8 +1,13 @@
+from output_writers.output_writer_buffer import OutputWriterBuffer
+
+
 class OutputWriter:
     _file_path: str
+    buffer: OutputWriterBuffer
 
     def __init__(self, file_path: str):
         self._file_path = file_path
+        self.buffer = OutputWriterBuffer()
 
     def write_to_line(self, content: str, line_num: int):
         lines = self.__read_file()
@@ -11,11 +16,14 @@ class OutputWriter:
             raise ValueError("Invalid line number")
 
         start, end = self.get_translated_text_range(lines, line_num)
+        self.buffer.append(content, start, end)
 
-        del lines[start:end + 1]
-        lines.insert(start, self.escape_content_value(content))
+    def flush(self):
+        lines = self.__read_file()
 
-        self.__write_file(lines)
+        modified_lines = self.buffer.apply_on_lines(lines)
+
+        self.__write_file(modified_lines)
 
     def get_translated_text_range(self, lines: list[str], line_num: int) -> (int, int):
         start = -1
@@ -35,11 +43,6 @@ class OutputWriter:
             end = len(lines) - 1
 
         return start, end
-
-        pass
-
-    def escape_content_value(self, content: str) -> str:
-        return f'msgstr "{content}"\n'
 
         pass
 

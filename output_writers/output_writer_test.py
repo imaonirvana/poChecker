@@ -44,9 +44,3 @@ def test_should_return_valid_index_range_for_empty_line():
     assert result[1] == -1
 
     pass
-
-def test_should_append_right_prefix():
-    escaped = output_writer.escape_content_value("Some content")
-
-    assert escaped.startswith("msgstr")
-    pass

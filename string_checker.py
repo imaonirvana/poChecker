@@ -3,7 +3,7 @@ import polib
 from PipelineInput import PipelineInput
 from error_writer import ErrorWriter
 from ignore_phrases import ignore_phrases
-from output_writer.output_writer import OutputWriter
+from output_writers.output_writer import OutputWriter
 from pipe_line import Pipeline
 
 
@@ -12,6 +12,8 @@ class StringChecker:
     def check_po_file(file_path):
         try:
             po = polib.pofile(file_path)
+            output_writer = OutputWriter(file_path)
+
             seen_entries = {}
 
             for entry in po:
@@ -34,17 +36,18 @@ class StringChecker:
 
                     if translated_string:
                         pipeline_input = PipelineInput(original_string, translated_string, file_path, entry.linenum)
-                        StringChecker.check_string_rules(pipeline_input)
+                        StringChecker.check_string_rules(pipeline_input, output_writer)
 
                 except Exception as inner_exception:
                     print(inner_exception)
+
+            output_writer.flush()
 
         except Exception as outer_exception:
             print(outer_exception)
 
     @staticmethod
-    def check_string_rules(pipeline_input: PipelineInput):
-        output_writer = OutputWriter(pipeline_input.get_file_path())
+    def check_string_rules(pipeline_input: PipelineInput, output_writer: OutputWriter):
         pipe_line = Pipeline()
 
         if not pipe_line.is_broken(pipeline_input.get_original(), pipeline_input.get_translated()):
