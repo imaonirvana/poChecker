@@ -96,9 +96,9 @@ def test_should_compare_in_one():
 def test_should_say_it_valid():
 
     assert not PercentRule().is_broken('Test some original', 'Some translated')
-    assert not PercentRule().is_broken('Test %should_retain% some original', 'Some translated')
     assert not PercentRule().is_broken('Test %should_retain some original', 'Some %should_retain translated')
     assert not PercentRule().is_broken('Test %should_retain% some original', 'Some %should_retain% translated')
+    assert not PercentRule().is_broken('Test %should_retain% some original %sh2% as', 'Some %sh2% saasas %should_retain% translated')
 
 
 def test_should_say_it_invalid():

@@ -53,11 +53,16 @@ class PercentRule(BaseRule):
         return result
 
     def _is_parts_broken(self, original_parts, translated_parts) -> bool:
-        for original_part, translated_part in zip(original_parts, translated_parts):
-            original_part_str = original_part.groups()[0]
-            translated_part_str = translated_part.groups()[0]
+        original_variables = [part.groups()[0] for part in original_parts if part.groups()[0] not in baned_parts]
+        translated_variables = [part.groups()[0] for part in translated_parts if part.groups()[0] not in baned_parts]
 
-            if original_part_str != translated_part_str:
-                return True
+        if not original_variables and not translated_variables:
+            return False
+
+        if not original_variables or not translated_variables:
+            return True
+
+        if set(original_variables) != set(translated_variables):
+            return True
 
         return False
