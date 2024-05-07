@@ -51,6 +51,9 @@ class RoundBracketsRule(BaseRule):
             if self._contains_arithmetics(translated_part_str):
                 continue
 
+            if not self._check_set(original_parts, translated_parts):
+                continue
+
             if original_part_str != translated_part_str:
                 return True
 
@@ -64,3 +67,12 @@ class RoundBracketsRule(BaseRule):
             return True
 
         return any(char in input for char in forbidden_chars)
+
+    def _check_set(self, original_parts, translated_parts) -> bool:
+        original_variables = [part.groups()[0] for part in original_parts]
+        translated_variables = [part.groups()[0] for part in translated_parts]
+
+        if set(original_variables) != set(translated_variables):
+            return True
+
+        return False
