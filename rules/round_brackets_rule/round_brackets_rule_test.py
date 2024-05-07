@@ -41,7 +41,8 @@ def test_should_compare_in_one():
 def test_should_say_it_valid():
 
     assert not RoundBracketsRule().is_broken('Test some original', 'Some translated')
-    assert not RoundBracketsRule().is_broken('Test $(should_retain) some original', 'Some translated')
+    assert not RoundBracketsRule().is_broken('Test $(should_retain) some original', 'Some translated $(should_retain)')
+    assert not RoundBracketsRule().is_broken('Test $(should_retain) some original $(should_retain2)', 'Some translated $(should_retain2) ASSAA $(should_retain) asassa')
 
 
 def test_should_say_it_invalid():

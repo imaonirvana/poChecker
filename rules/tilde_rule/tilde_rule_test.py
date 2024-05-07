@@ -41,8 +41,8 @@ def test_should_compare_in_one():
 def test_should_say_it_valid():
 
     assert not TildeRule().is_broken('Test some original', 'Some translated')
-    assert not TildeRule().is_broken('Test ~should_retain~ some original', 'Some translated')
     assert not TildeRule().is_broken('Test ~should_retain~ some original', 'Some ~should_retain~ translated')
+    assert not TildeRule().is_broken('Test ~should_retain~ some original ~should_retain2~', 'Some ~should_retain2~ translated ~should_retain~')
 
 
 def test_should_say_it_invalid():
