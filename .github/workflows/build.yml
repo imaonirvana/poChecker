@@ -1,0 +1,11 @@
+name: Build
+on:
+  push
+jobs:
+  freeze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      - name: Install deps
+        run: pip3 install -r requirements.txt
