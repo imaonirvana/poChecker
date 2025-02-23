@@ -19,16 +19,19 @@ class FileProcessor:
 
     @staticmethod
     def process_po_files(directory):
-        for root, dirs, files in os.walk(directory):
-            for file_name in files:
-                if file_name.endswith('.po'):
-                    file_path = os.path.join(root, file_name)
-                    print(f"Processing file: {file_path}")
+        """
+        Обробляє всі .po файли в заданій директорії.
+        Повертає кортеж: (total_files, total_errors, aggregated_errors)
+        """
+        total_files = 0
+        aggregated_errors = []
 
-                    with io.open(file_path, 'r', encoding='utf-8') as file:
-                        content = file.read()
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if file.endswith('.po'):
+                    total_files += 1
+                    file_path = os.path.join(root, file)
+                    errors = StringChecker.check_po_file(file_path)
+                    aggregated_errors.extend(errors)
 
-                    if '\r\n' in content or '\r' in content:
-                        FileProcessor.convert_line_endings_to_unix(file_path)
-
-                    StringChecker.check_po_file(file_path)
+        return total_files, len(aggregated_errors), aggregated_errors

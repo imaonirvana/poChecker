@@ -1,32 +1,39 @@
+#!/usr/bin/env python3
 import argparse
+import db
 from file_processor import FileProcessor
-from string_checker import StringChecker
-from error_writer import ErrorWriter
-import os
 
 def main():
-    parser = argparse.ArgumentParser(description="Process PO files and check for errors.")
-    parser.add_argument("-path", dest="directory_path", help="Path to the directory containing PO files")
-
+    parser = argparse.ArgumentParser(description='Запуск poChecker для перевірки .po файлів')
+    parser.add_argument('-path', required=True, help='Шлях до каталогу з .po файлами')
+    parser.add_argument('--use-db', action='store_true', help='Зберігати результати у базу даних')
     args = parser.parse_args()
 
-    if not args.directory_path:
-        print("Error: Please provide the path to the directory using the -path argument.")
-        return
+    directory = args.path
 
-    po_files = ["frontend.po", "xml.po", "apps.po", "api.po", "interactive.po", "rest-api.po", "mmisvc.po"]
+    if args.use_db:
+        db.init_db()
 
-    ErrorWriter.reset_error_files()
+    total_files, total_errors, errors_list = FileProcessor.process_po_files(directory)
 
-    for po_file in po_files:
-        file_path = os.path.join(args.directory_path, po_file)
+    # Запис результатів у текстовий файл (залишаємо існуючу логіку)
+    with open('all_errors.txt', 'w', encoding='utf-8') as f:
+        for error in errors_list:
+            f.write("====================================\n")
+            f.write("Error in {} line {}:\n".format(error.get('file_name'), error.get('line_number')))
+            f.write("Description: {}\n".format(error.get('error_description')))
+            f.write("Original: {}\n".format(error.get('original')))
+            f.write("Translated: {}\n".format(error.get('translated', '')))
+            f.write("====================================\n\n")
 
-        print(f"Processing file: {file_path}")
+    if args.use_db:
+        run_data = {
+            'directory': directory,
+            'total_files': total_files,
+            'total_errors': total_errors
+        }
+        db.save_run(run_data, errors_list)
+        print("Результати збережено у базу даних.")
 
-        FileProcessor.convert_line_endings_to_unix(file_path)
-        StringChecker.check_po_file(file_path)
-
-    print("Done checking files!")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
