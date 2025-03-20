@@ -1,10 +1,70 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Результати перевірок{% endblock %}
+{% block content %}
+  <h2 class="mt-4">Результати перевірок</h2>
+  <table class="table table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th>ID запуску</th>
+        <th>Дата</th>
+        <th>Директорія</th>
+        <th>Кількість файлів</th>
+        <th>Кількість помилок</th>
+        <th>Деталі</th>
+        <th>Завантажити звіт</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for run in runs %}
+      <tr>
+        <td>{{ run.run_id }}</td>
+        <td>{{ run.run_date }}</td>
+        <td>{{ run.directory }}</td>
+        <td>{{ run.total_files }}</td>
+        <td>{{ run.total_errors }}</td>
+        <td>
+          <!-- Кнопка для розгортання деталей запуску -->
+          <button class="btn btn-sm btn-info" type="button" data-toggle="collapse" data-target="#details-{{ run.run_id }}" aria-expanded="false" aria-controls="details-{{ run.run_id }}">
+            Переглянути
+          </button>
+        </td>
+        <td>
+          {% if run.result_file %}
+            <a href="{{ url_for('download_result', filename=run.result_file|replace('\\', '/') ) }}" class="btn btn-sm btn-success">Завантажити звіт</a>
+          {% else %}
+            N/A
+          {% endif %}
+        </td>
+      </tr>
+      <tr class="collapse" id="details-{{ run.run_id }}">
+        <td colspan="7">
+          <h5>Деталізація помилок для запуску {{ run.run_id }}</h5>
+          {% set details = run_details[run.run_id] %}
+          {% if details|length > 0 %}
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Тип помилки</th>
+                <th>Кількість</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for d in details %}
+              <tr>
+                <td>{{ d.error_type_name }}</td>
+                <td>{{ d.count }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+            <p>Немає помилок.</p>
+          {% endif %}
+          <!-- Кнопка для перегляду змінених файлів -->
+          <a href="{{ url_for('show_modified_files', run_id=run.run_id) }}" class="btn btn-sm btn-primary mt-2">Переглянути змінені файли</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

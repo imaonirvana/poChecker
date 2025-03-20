@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Змінені файли для запуску {{ run_id }}{% endblock %}
+{% block content %}
+  <h2 class="mt-4">Змінені файли для запуску {{ run_id }}</h2>
+  {% if files %}
+  <table class="table table-bordered">
+    <thead class="thead-dark">
+      <tr>
+        <th>Назва файлу</th>
+        <th>Дія</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for file in files %}
+      <tr>
+        <td>{{ file }}</td>
+        <td>
+          <a href="{{ url_for('download_modified', run_id=run_id, filename=file) }}" class="btn btn-sm btn-success">Завантажити</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>Немає змінених файлів.</p>
+  {% endif %}
+{% endblock %}

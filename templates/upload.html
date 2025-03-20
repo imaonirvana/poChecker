@@ -1,10 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}Завантаження файлів{% endblock %}
+{% block content %}
+  <h2 class="mt-4">Завантаження папки з .po файлами</h2>
+  <form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <!-- Використання webkitdirectory для вибору папки (працює у Chrome) -->
+      <input type="file" class="form-control-file" name="folder" webkitdirectory directory multiple required>
+    </div>
+    <button type="submit" class="btn btn-primary">Завантажити</button>
+  </form>
+{% endblock %}

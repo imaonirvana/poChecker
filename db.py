@@ -4,24 +4,44 @@ from datetime import datetime
 
 
 def init_db(db_path='poChecker.db'):
-    """
-    Створює (за потреби) всі таблиці та викликає заповнення статичних даних.
-    """
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # 1. Таблиця runs (інформація про запуск)
+    # 1. Таблиця roles
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS roles (
+            role_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            role_name TEXT UNIQUE,
+            role_description TEXT
+        )
+    ''')
+
+    # 2. Таблиця users
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password TEXT,
+            role_id INTEGER,
+            FOREIGN KEY(role_id) REFERENCES roles(role_id)
+        )
+    ''')
+
+    # 3. Таблиця runs (додано result_file)
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS runs (
             run_id INTEGER PRIMARY KEY AUTOINCREMENT,
             run_date TEXT,
             directory TEXT,
             total_files INTEGER,
-            total_errors INTEGER
+            total_errors INTEGER,
+            user_id INTEGER,
+            result_file TEXT,
+            FOREIGN KEY(user_id) REFERENCES users(user_id)
         )
     ''')
 
-    # 2. Таблиця files (список файлів, оброблених у межах одного запуску)
+    # 4. Таблиця files
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS files (
             file_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,7 +52,7 @@ def init_db(db_path='poChecker.db'):
         )
     ''')
 
-    # 3. Таблиця rules (усі можливі правила)
+    # 5. Таблиця rules
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS rules (
             rule_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -41,7 +61,7 @@ def init_db(db_path='poChecker.db'):
         )
     ''')
 
-    # 4. Таблиця error_types (типи помилок)
+    # 6. Таблиця error_types
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS error_types (
             error_type_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,7 +70,7 @@ def init_db(db_path='poChecker.db'):
         )
     ''')
 
-    # 5. Таблиця errors (кожна помилка, з посиланням на файл, правило і тип помилки)
+    # 7. Таблиця errors
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS errors (
             error_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,18 +88,27 @@ def init_db(db_path='poChecker.db'):
     ''')
 
     conn.commit()
-    # Заповнюємо таблиці rules та error_types статичними даними
     populate_static_data(cursor)
     conn.commit()
     conn.close()
 
+def get_db_connection(db_path='poChecker.db'):
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def populate_static_data(cursor):
-    """
-    Ручне заповнення таблиці rules усіма правилами, які є в проєкті,
-    а також таблиці error_types.
-    """
-    # === Ручне додавання правил (додайте свої за потреби) ===
+    # Заповнення таблиці roles
+    roles_data = [
+        ('user', 'Звичайний користувач, може бачити лише власні запуски'),
+        ('moderator', 'Модератор, може бачити всі запуски')
+    ]
+    for role_name, role_desc in roles_data:
+        cursor.execute("SELECT COUNT(*) FROM roles WHERE role_name = ?", (role_name,))
+        if cursor.fetchone()[0] == 0:
+            cursor.execute("INSERT INTO roles (role_name, role_description) VALUES (?, ?)", (role_name, role_desc))
+
+    # Ручне додавання правил
     rules_data = [
         ('duplicate_rule', 'Запис дублюється (оригінал дорівнює перекладу або вже був доданий)'),
         ('capitalization_rule', 'Перевірка першої великої літери'),
@@ -90,18 +119,13 @@ def populate_static_data(cursor):
         ('single_quotes_rule', 'Перевірка одинарних лапок'),
         ('tilde_rule', 'Перевірка тильди'),
         ('exception_rule', 'Виняткова ситуація під час обробки')
-        # Додавайте інші правила за потреби
     ]
     for rule_name, rule_desc in rules_data:
         cursor.execute("SELECT COUNT(*) FROM rules WHERE rule_name = ?", (rule_name,))
         if cursor.fetchone()[0] == 0:
-            cursor.execute("""
-                INSERT INTO rules (rule_name, rule_description)
-                VALUES (?, ?)
-            """, (rule_name, rule_desc))
+            cursor.execute("INSERT INTO rules (rule_name, rule_description) VALUES (?, ?)", (rule_name, rule_desc))
 
-    # === Типи помилок ===
-    # Ви можете розширити список типів (якщо хочете деталізувати помилки).
+    # Ручне додавання типів помилок
     error_types_data = [
         ('Duplicate', 'Помилка дублювання'),
         ('Rule Violation', 'Порушення правил перевірки'),
@@ -110,25 +134,23 @@ def populate_static_data(cursor):
     for et_name, et_desc in error_types_data:
         cursor.execute("SELECT COUNT(*) FROM error_types WHERE error_type_name = ?", (et_name,))
         if cursor.fetchone()[0] == 0:
-            cursor.execute("""
-                INSERT INTO error_types (error_type_name, error_type_description)
-                VALUES (?, ?)
-            """, (et_name, et_desc))
+            cursor.execute("INSERT INTO error_types (error_type_name, error_type_description) VALUES (?, ?)",
+                           (et_name, et_desc))
+
+
+def get_role_id(role_name, cursor):
+    cursor.execute("SELECT role_id FROM roles WHERE role_name = ?", (role_name,))
+    row = cursor.fetchone()
+    return row[0] if row else None
 
 
 def get_rule_id(rule_name, cursor):
-    """
-    Повертає rule_id за rule_name.
-    """
     cursor.execute("SELECT rule_id FROM rules WHERE rule_name = ?", (rule_name,))
     row = cursor.fetchone()
     return row[0] if row else None
 
 
 def get_error_type_id(error_type_name, cursor):
-    """
-    Повертає error_type_id за error_type_name.
-    """
     cursor.execute("SELECT error_type_id FROM error_types WHERE error_type_name = ?", (error_type_name,))
     row = cursor.fetchone()
     return row[0] if row else None
@@ -137,40 +159,22 @@ def get_error_type_id(error_type_name, cursor):
 def save_run_full(run_data, files_data, db_path='poChecker.db'):
     """
     Зберігає запуск перевірки, дані про файли та помилки.
-
-    run_data: словник з ключами 'directory', 'total_files', 'total_errors'
-    files_data: список словників, кожен з яких описує файл:
-       {
-         'file_name': ...,
-         'file_path': ...,
-         'errors': [
-             {
-               'line_number': ...,
-               'error_description': ...,
-               'original': ...,
-               'translated': ...,
-               'rule': 'capitalization_rule' / 'duplicate_rule' / ... / 'exception_rule'
-             },
-             ...
-         ]
-       }
+    Повертає run_id, щоб його можна було використати для генерації файлу результатів.
     """
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # 1. Запис про запуск
     cursor.execute('''
-        INSERT INTO runs (run_date, directory, total_files, total_errors)
-        VALUES (?, ?, ?, ?)
-    ''', (
-        datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        run_data.get('directory'),
-        run_data.get('total_files'),
-        run_data.get('total_errors')
-    ))
+        INSERT INTO runs (run_date, directory, total_files, total_errors, user_id)
+        VALUES (?, ?, ?, ?, ?)
+    ''', (datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+          run_data.get('directory'),
+          run_data.get('total_files'),
+          run_data.get('total_errors'),
+          run_data.get('user_id')
+          ))
     run_id = cursor.lastrowid
 
-    # 2. Для кожного файлу записуємо інформацію у таблицю files
     for file_data in files_data:
         cursor.execute('''
             INSERT INTO files (run_id, file_name, file_path)
@@ -178,23 +182,16 @@ def save_run_full(run_data, files_data, db_path='poChecker.db'):
         ''', (run_id, file_data.get('file_name'), file_data.get('file_path')))
         file_id = cursor.lastrowid
 
-        # 3. Для кожної помилки в цьому файлі робимо запис у таблицю errors
         for error in file_data.get('errors', []):
-            rule_name = error.get('rule', 'exception_rule')  # Якщо не вказано, то припустимо Exception
-            # Мапимо rule_name -> error_type
-            # Наприклад, якщо rule_name == 'duplicate_rule', то error_type = 'Duplicate'
-            # Якщо rule_name == 'exception_rule', то error_type = 'Exception'
-            # Інакше -> 'Rule Violation'
+            rule_name = error.get('rule', 'exception_rule')
             if rule_name == 'duplicate_rule':
                 error_type_name = 'Duplicate'
             elif rule_name == 'exception_rule':
                 error_type_name = 'Exception'
             else:
                 error_type_name = 'Rule Violation'
-
             rule_id = get_rule_id(rule_name, cursor)
             error_type_id = get_error_type_id(error_type_name, cursor)
-
             cursor.execute('''
                 INSERT INTO errors (file_id, rule_id, error_type_id, line_number, error_description, original, translated)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -207,6 +204,30 @@ def save_run_full(run_data, files_data, db_path='poChecker.db'):
                 error.get('original', ''),
                 error.get('translated', '')
             ))
-
     conn.commit()
     conn.close()
+    return run_id
+
+
+def generate_all_errors_file(files_data, run_id, results_folder='results'):
+    """
+    Генерує текстовий файл з деталізацією помилок для запуску run_id.
+    Повертає шлях до згенерованого файлу.
+    """
+    if not os.path.exists(results_folder):
+        os.makedirs(results_folder)
+    filename = f"all_errors_{run_id}.txt"
+    filepath = os.path.join(results_folder, filename)
+    with open(filepath, 'w', encoding='utf-8') as f:
+        for file_data in files_data:
+            f.write("====================================\n")
+            f.write(f"File: {file_data.get('file_name')}\n")
+            f.write(f"Path: {file_data.get('file_path')}\n")
+            for error in file_data.get('errors', []):
+                f.write("====================================\n")
+                f.write(f"Line: {error.get('line_number')}\n")
+                f.write(f"Description: {error.get('error_description')}\n")
+                f.write(f"Original: {error.get('original')}\n")
+                f.write(f"Translated: {error.get('translated')}\n")
+            f.write("====================================\n\n")
+    return filepath

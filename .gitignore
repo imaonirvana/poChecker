@@ -11,3 +11,6 @@ __pycache__/*
 test_dir/
 all_errors.txt
 duplicates.txt
+modified/
+results/
+uploads/

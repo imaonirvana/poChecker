@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Сторінку не знайдено{% endblock %}
+{% block content %}
+  <div class="text-center mt-5">
+    <h1>404</h1>
+    <p>Сторінку не знайдено.</p>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">На головну</a>
+  </div>
+{% endblock %}
