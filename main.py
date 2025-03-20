@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import db
-from file_processor import FileProcessor
+from file_processor import process_po_files
 
 def main():
     parser = argparse.ArgumentParser(description='Запуск poChecker для перевірки .po файлів')
@@ -12,27 +12,31 @@ def main():
     directory = args.path
 
     if args.use_db:
-        db.init_db()
+        db.init_db()  # Створює (якщо треба) таблиці та заповнює rules/error_types
 
-    total_files, total_errors, errors_list = FileProcessor.process_po_files(directory)
+    total_files, total_errors, files_data = process_po_files(directory)
 
-    # Запис результатів у текстовий файл (залишаємо існуючу логіку)
+    # Запис результатів у текстовий файл (існуюча логіка)
     with open('all_errors.txt', 'w', encoding='utf-8') as f:
-        for error in errors_list:
-            f.write("====================================\n")
-            f.write("Error in {} line {}:\n".format(error.get('file_name'), error.get('line_number')))
-            f.write("Description: {}\n".format(error.get('error_description')))
-            f.write("Original: {}\n".format(error.get('original')))
-            f.write("Translated: {}\n".format(error.get('translated', '')))
-            f.write("====================================\n\n")
+        for file_info in files_data:
+            file_path = file_info.get('file_path')
+            for error in file_info.get('errors', []):
+                f.write("====================================\n")
+                f.write("Error in {} line {}:\n".format(file_path, error.get('line_number')))
+                f.write("Description: {}\n".format(error.get('error_description')))
+                f.write("Original: {}\n".format(error.get('original')))
+                f.write("Translated: {}\n".format(error.get('translated', '')))
+                f.write("Rule: {}\n".format(error.get('rule', '')))
+                f.write("====================================\n\n")
 
+    # Якщо потрібно зберегти у БД
     if args.use_db:
         run_data = {
             'directory': directory,
             'total_files': total_files,
             'total_errors': total_errors
         }
-        db.save_run(run_data, errors_list)
+        db.save_run_full(run_data, files_data)
         print("Результати збережено у базу даних.")
 
 if __name__ == '__main__':
